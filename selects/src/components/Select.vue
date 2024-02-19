@@ -124,7 +124,7 @@ function testCookies() {
 <style scoped>
 .container {
   padding: 20px;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   width: 300px;
   /* max-width: 400px; */
   background-color: #ffffff;
