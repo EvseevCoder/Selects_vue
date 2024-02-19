@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Тестовое</title>
+  </head>
+  <body>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+      }
+
+      h2 {
+        margin-top: 30px;
+      }
+
+      select {
+        max-width: 160px;
+        margin-bottom: 30px;
+      }
+
+      .container {
+        min-height: 130vh;
+        width: 400px;
+
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      button {
+        max-width: 300px;
+        padding: 10px;
+      }
+    </style>
+
+    <div class="container">
+      <h2>Работа с зависимыми Select</h2>
+      <h3>Город</h3>
+      <select id="city">
+        <option value="Выберите город">Выберите город</option>
+        <option value="Москва">Москва</option>
+        <option value="Самара">Самара</option>
+        <option value="Питер">Питер</option>
+      </select>
+
+      <h3>Цех</h3>
+      <select id="ceh"></select>
+
+      <h3>Сотрудник</h3>
+      <select id="worker"></select>
+
+      <h3>Бригада</h3>
+      <select id="br">
+        <option value="Бригада 1">Бригада 1</option>
+        <option value="Бригада 2">Бригада 2</option>
+        <option value="Бригада 3">Бригада 3</option>
+        <option value="Бригада 4">Бригада 4</option>
+      </select>
+
+      <h3>Смена</h3>
+      <select id="sm">
+        <option value="Смена 1">Смена 1</option>
+        <option value="Смена 2">Смена 2</option>
+        <option value="Смена 3">Смена 3</option>
+        <option value="Смена 4">Смена 4</option>
+      </select>
+      <button class="save">Сохранить данные в Cookies</button>
+      <button class="test">Проверка Cookies</button>
+    </div>
+
+    <script>
+      let cehs = {
+        Москва: ["Цех_москва1", "Цех_москва2", "Цех_москва3"],
+        Самара: ["Цех_самара1", "Цех_самара2", "Цех_самара3"],
+        Питер: ["Цех_питер1", "Цех_питер2", "Цех_питер3"],
+      };
+
+      let workers = {
+        Цех_москва1: ["Артем", "Иван"],
+        Цех_москва2: ["Рашид", "Артур"],
+        Цех_москва3: ["Антон", "Павел"],
+        Цех_самара1: ["Игорь", "Вова"],
+        Цех_самара2: ["Перт", "Владимир"],
+        Цех_самара3: ["Вячеслав", "Денис"],
+        Цех_питер1: ["Виктор", "Святослав"],
+        Цех_питер2: ["Тимофей", "Дмитрий"],
+        Цех_питер3: ["Глеб", "Игнат"],
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        let city = document.getElementById("city");
+        let ceh = document.getElementById("ceh");
+        let worker = document.getElementById("worker");
+
+        ceh.add(new Option("Выберите цех"));
+        for (el in cehs) {
+          for (let index = 0; index < 3; index++) {
+            ceh.add(new Option(cehs[el][index]));
+          }
+        }
+
+        city.addEventListener("change", () => {
+          selectCity();
+          selectCeh();
+
+          if (city.value == "Выберите город") {
+            ceh.innerHTML = "";
+            ceh.add(new Option("Выберите цех"));
+            for (el in cehs) {
+              for (let index = 0; index < 3; index++) {
+                ceh.add(new Option(cehs[el][index]));
+              }
+            }
+          }
+        });
+
+        ceh.addEventListener("change", selectCeh);
+
+        function selectCity() {
+          ceh.innerHTML = "";
+          let val = city.value;
+          if (val == "Выберите город") {
+            ceh.innerHTML = "";
+          } else {
+            ceh.add(new Option("Выберите цех"));
+            for (let i = 0; i < cehs[val].length; i++) {
+              ceh.add(new Option(cehs[val][i]));
+            }
+          }
+        }
+
+        function selectCeh() {
+          worker.innerHTML = "";
+          let val = ceh.value;
+          if (val == "Выберите цех" || val == "") {
+            worker.innerHTML = "";
+          } else {
+            worker.add(new Option("Выберите сотрудника"));
+            for (let i = 0; i < workers[val].length; i++) {
+              worker.add(new Option(workers[val][i]));
+            }
+          }
+        }
+
+        let br = document.getElementById("br");
+        let sm = document.getElementById("sm");
+
+        let save = document.querySelector(".save");
+        save.addEventListener("click", () => {
+          if (city.value == "Выберите город") {
+            for (el in cehs) {
+              if (cehs[el].indexOf(ceh.value) != -1) {
+                data = {
+                  city: el,
+                  ceh: ceh.value,
+                  worker: worker.value,
+                  br: br.value,
+                  sm: sm.value,
+                };
+                console.log("Куки сохранены", data);
+
+                const jsonData = JSON.stringify(data);
+                document.cookie = "userData=" + jsonData + ";path=/";
+              }
+            }
+          } else {
+            data = {
+              city: city.value,
+              ceh: ceh.value,
+              worker: worker.value,
+              br: br.value,
+              sm: sm.value,
+            };
+            console.log("Куки сохранены", data);
+
+            const jsonData = JSON.stringify(data);
+            document.cookie = "userData=" + jsonData + ";path=/";
+          }
+        });
+
+        let test = document.querySelector(".test");
+        test.onclick = () => {
+          alert(document.cookie);
+        };
+      });
+    </script>
+  </body>
+</html>
